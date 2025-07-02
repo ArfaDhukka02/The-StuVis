@@ -1,0 +1,6 @@
+# ignore the PEM/key files
+Project1.pem
+Project1.ppk
+
+# ignore the entire EC2 upload folder (with special chars)
+ubuntu@3.97.6.225/
