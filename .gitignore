@@ -1,6 +1,23 @@
-# ignore the PEM/key files
-Project1.pem
-Project1.ppk
+*.pem
+*.ppk
 
-# ignore the entire EC2 upload folder (with special chars)
-ubuntu@3.97.6.225/
+# Docker volume data / local overrides
+db_data/
+docker-compose.override.yml
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Editor / OS junk
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Secrets
+.env
+
+# Logs
+*.log
+EOF

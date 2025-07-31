@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My 3‑Tier Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>My 3‑Tier Dashboard</h1>
+    <p>Data powered by Flask &amp; MySQL</p>
+  </header>
+
+  <section id="cards-container">
+    <!-- JavaScript will inject item cards here -->
+  </section>
+
+  <script>
+    const apiHost = '44.201.154.116'; 
+    fetch('/api/students')
+      .then(r => r.json())
+      .then(students => {
+        const c = document.getElementById('cards-container');
+      	students.forEach(s => {
+         const card = document.createElement('div');
+         card.className = 'item-card';
+         card.innerHTML = `
+          <h2>${s.name}</h2>
+          <p><strong>Major:</strong> ${s.major}</p>
+          <p><strong>GPA:</strong> ${s.gpa.toFixed(2)}</p>
+        `;
+        c.appendChild(card);
+      });
+    })
+    .catch(console.error);
+  </script>
+</body>
+</html>

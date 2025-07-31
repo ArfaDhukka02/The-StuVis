@@ -1,0 +1,53 @@
+/* Full reset */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f5f7fa;
+  color: #333;
+}
+
+/* Header styling */
+header {
+  text-align: center;
+  padding: 2rem 1rem;
+  background: #4a90e2;
+  color: #fff;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+header h1 { font-size: 2.5rem; }
+header p { font-size: 1.1rem; opacity: 0.9; }
+
+/* Cards container */
+#cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Individual item cards */
+.item-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 1rem;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.item-card h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+  color: #4a90e2;
+}
+.item-card p {
+  font-size: 1rem;
+  color: #555;
+}
+.item-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
