@@ -1,0 +1,23 @@
+*.pem
+*.ppk
+
+# Docker volume data / local overrides
+db_data/
+docker-compose.override.yml
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Editor / OS junk
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Secrets
+.env
+
+# Logs
+*.log
+EOF
