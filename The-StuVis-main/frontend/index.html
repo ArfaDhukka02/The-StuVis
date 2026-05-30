@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Stu-Vis — Student Analytics Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <h1>Stu-Vis</h1>
+    <p class="subtitle">Student Analytics Dashboard &mdash; powered by Flask &amp; MySQL</p>
+  </div>
+</header>
+
+<!-- SECTION 1: Summary stat cards -->
+<section class="section">
+  <h2 class="section-title">📊 Overview</h2>
+  <div id="summary-cards" class="cards-row">
+    <div class="stat-card"><div class="stat-val" id="s-total">—</div><div class="stat-label">Total Students</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-avg">—</div><div class="stat-label">Average GPA</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-high">—</div><div class="stat-label">Highest GPA</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-low">—</div><div class="stat-label">Lowest GPA</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-majors">—</div><div class="stat-label">Majors</div></div>
+  </div>
+</section>
+
+<!-- SECTION 2: Bar chart — avg GPA by major -->
+<section class="section">
+  <h2 class="section-title">📈 Visualization 1 — Average GPA by Major</h2>
+  <div class="chart-box"><canvas id="chart-gpa-major"></canvas></div>
+</section>
+
+<!-- SECTION 3: Pie chart — students per major -->
+<section class="section">
+  <h2 class="section-title">🥧 Visualization 2 — Students per Major</h2>
+  <div class="chart-box"><canvas id="chart-pie-major"></canvas></div>
+</section>
+
+<!-- SECTION 4: GPA distribution histogram -->
+<section class="section">
+  <h2 class="section-title">📉 Visualization 3 — GPA Distribution</h2>
+  <div class="chart-box"><canvas id="chart-dist"></canvas></div>
+</section>
+
+<!-- SECTION 5: Top students leaderboard -->
+<section class="section">
+  <h2 class="section-title">🏆 Visualization 4 — Top 10 Students Leaderboard</h2>
+  <div class="chart-box"><canvas id="chart-top"></canvas></div>
+</section>
+
+<!-- SECTION 6: Horizontal bar — count by major -->
+<section class="section">
+  <h2 class="section-title">📋 Visualization 5 — Enrollment by Major</h2>
+  <div class="chart-box"><canvas id="chart-enroll"></canvas></div>
+</section>
+
+<!-- SECTION 7: Search/filter with student cards -->
+<section class="section">
+  <h2 class="section-title">🔍 Visualization 6 — Search &amp; Filter Students</h2>
+  <div class="filter-row">
+    <input type="text" id="search-input" placeholder="Search by name..." oninput="filterStudents()">
+    <select id="major-filter" onchange="filterStudents()">
+      <option value="">All Majors</option>
+    </select>
+  </div>
+  <div id="student-count" class="student-count"></div>
+  <div id="cards-container" class="student-grid"></div>
+</section>
+
+<footer>
+  <p>Stu-Vis &mdash; 3-Tier Cloud Analytics Platform | NGINX &rarr; Flask API &rarr; MySQL on AWS EC2</p>
+</footer>
+
+<script>
+  const COLORS = ['#4f8ef7','#f76b4f','#4fc97a','#f7c44f','#a44ff7','#4ff7e8','#f74fa0','#c9f74f'];
+
+  async function fetchJSON(path) {
+    const res = await fetch(path);
+    return res.json();
+  }
+
+  // --- Summary Cards ---
+  async function loadSummary() {
+    const d = await fetchJSON('/api/summary');
+    document.getElementById('s-total').textContent = d.total_students;
+    document.getElementById('s-avg').textContent = d.avg_gpa.toFixed(2);
+    document.getElementById('s-high').textContent = d.highest_gpa.toFixed(2);
+    document.getElementById('s-low').textContent = d.lowest_gpa.toFixed(2);
+    document.getElementById('s-majors').textContent = d.major_count;
+  }
+
+  // --- Bar chart: avg GPA by major ---
+  async function loadGpaByMajor() {
+    const data = await fetchJSON('/api/gpa-by-major');
+    const labels = data.map(d => d.major);
+    const values = data.map(d => d.avg_gpa);
+    new Chart(document.getElementById('chart-gpa-major'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Average GPA',
+          data: values,
+          backgroundColor: COLORS,
+          borderRadius: 6,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { min: 3.0, max: 4.0, title: { display: true, text: 'Average GPA' } }
+        }
+      }
+    });
+  }
+
+  // --- Pie chart: students per major ---
+  async function loadPieChart() {
+    const data = await fetchJSON('/api/students-per-major');
+    const labels = data.map(d => d.major);
+    const values = data.map(d => d.count);
+    new Chart(document.getElementById('chart-pie-major'), {
+      type: 'doughnut',
+      data: {
+        labels,
+        datasets: [{ data: values, backgroundColor: COLORS, hoverOffset: 10 }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { position: 'right' } }
+      }
+    });
+  }
+
+  // --- Histogram: GPA distribution ---
+  async function loadDistribution() {
+    const data = await fetchJSON('/api/gpa-distribution');
+    const labels = data.map(d => d.bucket);
+    const values = data.map(d => d.count);
+    new Chart(document.getElementById('chart-dist'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Number of Students',
+          data: values,
+          backgroundColor: '#4f8ef7',
+          borderRadius: 6,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { title: { display: true, text: 'Students' } } }
+      }
+    });
+  }
+
+  // --- Top 10 leaderboard bar chart ---
+  async function loadTopStudents() {
+    const data = await fetchJSON('/api/top?limit=10');
+    const labels = data.map(d => d.name.split(' ')[0] + ' ' + d.name.split(' ').slice(-1));
+    const values = data.map(d => d.gpa);
+    new Chart(document.getElementById('chart-top'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'GPA',
+          data: values,
+          backgroundColor: values.map((_, i) => i === 0 ? '#f7c44f' : '#4f8ef7'),
+          borderRadius: 6,
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { x: { min: 3.5, max: 4.0, title: { display: true, text: 'GPA' } } }
+      }
+    });
+  }
+
+  // --- Enrollment bar ---
+  async function loadEnrollment() {
+    const data = await fetchJSON('/api/students-per-major');
+    const labels = data.map(d => d.major);
+    const values = data.map(d => d.count);
+    new Chart(document.getElementById('chart-enroll'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Students Enrolled',
+          data: values,
+          backgroundColor: COLORS,
+          borderRadius: 6,
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { x: { title: { display: true, text: 'Number of Students' } } }
+      }
+    });
+  }
+
+  // --- Search & Filter ---
+  let allStudents = [];
+  async function loadStudents() {
+    allStudents = await fetchJSON('/api/students');
+    // Populate major dropdown
+    const majors = [...new Set(allStudents.map(s => s.major))].sort();
+    const sel = document.getElementById('major-filter');
+    majors.forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m; opt.textContent = m;
+      sel.appendChild(opt);
+    });
+    filterStudents();
+  }
+
+  function filterStudents() {
+    const query = document.getElementById('search-input').value.toLowerCase();
+    const major = document.getElementById('major-filter').value;
+    const filtered = allStudents.filter(s =>
+      s.name.toLowerCase().includes(query) &&
+      (major === '' || s.major === major)
+    );
+    document.getElementById('student-count').textContent = `Showing ${filtered.length} of ${allStudents.length} students`;
+    const container = document.getElementById('cards-container');
+    container.innerHTML = '';
+    filtered.slice(0, 60).forEach(s => {
+      const gpaClass = s.gpa >= 3.75 ? 'gpa-high' : s.gpa >= 3.5 ? 'gpa-mid' : 'gpa-low';
+      const card = document.createElement('div');
+      card.className = 'student-card';
+      card.innerHTML = `
+        <div class="student-name">${s.name}</div>
+        <div class="student-major">${s.major}</div>
+        <div class="student-gpa ${gpaClass}">GPA: ${s.gpa.toFixed(2)}</div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  // --- Boot ---
+  Promise.all([
+    loadSummary(),
+    loadGpaByMajor(),
+    loadPieChart(),
+    loadDistribution(),
+    loadTopStudents(),
+    loadEnrollment(),
+    loadStudents(),
+  ]).catch(console.error);
+</script>
+</body>
+</html>

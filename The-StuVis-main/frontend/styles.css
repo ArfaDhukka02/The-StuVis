@@ -1,0 +1,114 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #0f1117;
+  color: #e0e6f0;
+  min-height: 100vh;
+}
+
+header {
+  background: linear-gradient(135deg, #1a2340, #0d1526);
+  border-bottom: 2px solid #2a3f6f;
+  padding: 2rem 2rem 1.5rem;
+}
+.header-inner h1 { font-size: 2rem; color: #4f8ef7; letter-spacing: 2px; }
+.subtitle { color: #7a90b8; font-size: 0.9rem; margin-top: 0.3rem; }
+
+.section {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #a0b8e8;
+  border-left: 3px solid #4f8ef7;
+  padding-left: 0.75rem;
+}
+
+/* Summary cards */
+.cards-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.stat-card {
+  flex: 1;
+  min-width: 130px;
+  background: #1a2340;
+  border: 1px solid #2a3f6f;
+  border-radius: 10px;
+  padding: 1.2rem;
+  text-align: center;
+}
+.stat-val { font-size: 2rem; font-weight: 700; color: #4f8ef7; }
+.stat-label { font-size: 0.75rem; color: #7a90b8; margin-top: 0.3rem; text-transform: uppercase; letter-spacing: 1px; }
+
+/* Charts */
+.chart-box {
+  background: #1a2340;
+  border: 1px solid #2a3f6f;
+  border-radius: 10px;
+  padding: 1.5rem;
+  max-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.chart-box canvas { max-height: 340px; }
+
+/* Filter row */
+.filter-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+.filter-row input, .filter-row select {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.6rem 1rem;
+  background: #1a2340;
+  border: 1px solid #2a3f6f;
+  border-radius: 8px;
+  color: #e0e6f0;
+  font-size: 0.9rem;
+}
+.student-count {
+  font-size: 0.85rem;
+  color: #7a90b8;
+  margin-bottom: 0.75rem;
+}
+
+/* Student cards grid */
+.student-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+.student-card {
+  background: #1a2340;
+  border: 1px solid #2a3f6f;
+  border-radius: 8px;
+  padding: 1rem;
+  transition: border-color 0.2s;
+}
+.student-card:hover { border-color: #4f8ef7; }
+.student-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.3rem; }
+.student-major { font-size: 0.78rem; color: #7a90b8; margin-bottom: 0.5rem; }
+.student-gpa { font-size: 0.85rem; font-weight: 700; }
+.gpa-high { color: #4fc97a; }
+.gpa-mid  { color: #f7c44f; }
+.gpa-low  { color: #f76b4f; }
+
+footer {
+  text-align: center;
+  padding: 2rem;
+  color: #3a5080;
+  font-size: 0.8rem;
+  margin-top: 3rem;
+  border-top: 1px solid #1a2340;
+}
