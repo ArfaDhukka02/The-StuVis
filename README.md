@@ -43,6 +43,33 @@ All three services are containerized with Docker and orchestrated via Docker Com
 | `GET /analytics/summary` | Total students, avg/min/max GPA |
 | `GET /analytics/students-per-major` | Enrollment count per major |
 
+## Infrastructure as Code (Terraform)
+
+All AWS infrastructure is provisioned with Terraform — no manual console configuration.
+
+```
+terraform/
+├── main.tf        # VPC, subnets, IGW, EC2, RDS, security groups
+├── variables.tf   # Input variables (region, AMI, DB credentials)
+└── outputs.tf     # EC2 public IP/DNS, RDS endpoint
+```
+
+**Resources provisioned:**
+- VPC with public subnet (EC2) and two private subnets (RDS Multi-AZ)
+- Internet Gateway + route table
+- EC2 security group (ports 22, 80, 8080)
+- RDS security group (port 3306, EC2-only inbound)
+- EC2 `t2.micro` instance with Docker bootstrap user_data script
+- RDS MySQL 8.0 `db.t3.micro` instance (private, not publicly accessible)
+
+```bash
+cd terraform
+terraform init
+export TF_VAR_db_password="yourpassword"
+terraform plan
+terraform apply
+```
+
 ## Run Locally
 
 ```bash
@@ -53,7 +80,8 @@ Then open: http://localhost:8080
 
 ## Tech Stack
 
-- **Cloud:** AWS EC2
+- **Cloud:** AWS EC2, RDS (MySQL 8.0)
+- **Infrastructure as Code:** Terraform (EC2, VPC, security groups, RDS)
 - **Containers:** Docker, Docker Compose
 - **Backend:** Python, Flask, mysql-connector-python
 - **Frontend:** HTML, CSS, JavaScript, Chart.js
